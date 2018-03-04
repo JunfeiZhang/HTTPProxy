@@ -145,8 +145,13 @@ if __name__ == '__main__':
 	proxy_socket.listen(200)
 	print datetime.datetime.now().strftime("%d %b %x"), '- Proxy listening on 0.0.0.0:', sys.argv[1]
 	while 1:
-		client_conn, client_addr = proxy_socket.accept()
-		handler = Client_handler(proxy_socket, client_conn)
-		handler.start()
-			
+		try:
+			client_conn, client_addr = proxy_socket.accept()
+			handler = Client_handler(proxy_socket, client_conn)
+			handler.daemon = True
+			handler.start()
+		except KeyboardInterrupt, SystemExit:
+			proxy_socket.close()
+			sys.exit()
 	proxy_socket.close()
+	
